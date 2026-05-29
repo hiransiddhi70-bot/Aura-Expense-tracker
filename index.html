@@ -22,37 +22,52 @@
     }
 
     .container{
-      max-width:450px;
+      max-width:500px;
       margin:auto;
     }
 
-    .app-title{
+    .title{
       text-align:center;
-      font-size:32px;
-      color:#38bdf8;
+      font-size:35px;
       margin-bottom:20px;
+      color:#38bdf8;
       font-weight:bold;
     }
 
-    /* TOP TOTAL SECTION */
-
-    .top-balance{
-      background:linear-gradient(135deg,#38bdf8,#2563eb);
+    .top-card{
+      background:linear-gradient(135deg,#2563eb,#38bdf8);
       padding:25px;
       border-radius:25px;
       text-align:center;
       margin-bottom:20px;
-      box-shadow:0 0 15px rgba(0,0,0,0.4);
     }
 
-    .top-balance h3{
-      font-size:18px;
+    .top-card h3{
       margin-bottom:10px;
-      opacity:0.9;
+      font-size:18px;
     }
 
-    .top-balance h1{
+    .top-card h1{
       font-size:45px;
+    }
+
+    .filter-buttons{
+      display:flex;
+      gap:10px;
+      margin-top:15px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+
+    .filter-buttons button{
+      width:auto;
+      padding:8px 15px;
+      border:none;
+      border-radius:10px;
+      background:white;
+      color:#2563eb;
+      font-weight:bold;
+      cursor:pointer;
     }
 
     .card{
@@ -60,10 +75,9 @@
       padding:20px;
       border-radius:20px;
       margin-bottom:20px;
-      box-shadow:0 0 10px rgba(0,0,0,0.3);
     }
 
-    input, select{
+    input,select{
       width:100%;
       padding:12px;
       margin-top:12px;
@@ -81,20 +95,16 @@
       border-radius:12px;
       background:#38bdf8;
       color:white;
-      font-size:17px;
+      font-size:16px;
       font-weight:bold;
       cursor:pointer;
-    }
-
-    button:hover{
-      background:#0ea5e9;
     }
 
     .expense-item{
       background:#334155;
       padding:15px;
       border-radius:15px;
-      margin-top:12px;
+      margin-top:15px;
 
       display:flex;
       justify-content:space-between;
@@ -106,23 +116,29 @@
     }
 
     .category{
-      color:#cbd5e1;
       font-size:13px;
+      color:#cbd5e1;
+    }
+
+    .datetime{
+      font-size:12px;
+      color:#94a3b8;
+      margin-top:5px;
     }
 
     .amount{
       color:#f87171;
-      font-weight:bold;
       font-size:18px;
+      font-weight:bold;
     }
 
     .delete-btn{
-      margin-top:8px;
       background:red;
-      padding:5px 10px;
       border:none;
-      border-radius:7px;
       color:white;
+      padding:6px 10px;
+      border-radius:8px;
+      margin-top:8px;
       cursor:pointer;
       width:auto;
     }
@@ -132,88 +148,183 @@
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <div class="app-title">
-      Aura Expense 💸
-    </div>
+  <div class="title">
+    Aura Expense 💸
+  </div>
 
-    <!-- TOP TOTAL AMOUNT -->
+  <!-- TOP TOTAL -->
 
-    <div class="top-balance">
-      <h3>Total Expenses</h3>
-      <h1 id="totalAmount">₹0</h1>
-    </div>
+  <div class="top-card">
 
-    <!-- ADD EXPENSE -->
+    <h3 id="filterTitle">
+      Total Expenses
+    </h3>
 
-    <div class="card">
+    <h1 id="totalAmount">
+      ₹0
+    </h1>
 
-      <input
-        type="text"
-        id="title"
-        placeholder="Enter expense title"
-      >
+    <!-- FILTER BUTTONS -->
 
-      <input
-        type="number"
-        id="amount"
-        placeholder="Enter amount"
-      >
+    <div class="filter-buttons">
 
-      <select id="category">
-        <option>Food</option>
-        <option>Travel</option>
-        <option>Shopping</option>
-        <option>Study</option>
-        <option>Other</option>
-      </select>
-
-      <button onclick="addExpense()">
-        Add Expense
+      <button onclick="setFilter('daily')">
+        Daily
       </button>
 
-    </div>
+      <button onclick="setFilter('monthly')">
+        Monthly
+      </button>
 
-    <!-- HISTORY -->
+      <button onclick="setFilter('yearly')">
+        Yearly
+      </button>
 
-    <div class="card">
-
-      <h2>Expense History</h2>
-
-      <div id="expenseList"></div>
+      <button onclick="setFilter('all')">
+        All
+      </button>
 
     </div>
 
   </div>
 
-  <script>
+  <!-- ADD EXPENSE -->
 
-    let expenses =
-      JSON.parse(localStorage.getItem("expenses")) || [];
+  <div class="card">
 
-    function saveData(){
+    <input
+      type="text"
+      id="title"
+      placeholder="Expense title"
+    >
 
-      localStorage.setItem(
-        "expenses",
-        JSON.stringify(expenses)
-      );
+    <input
+      type="number"
+      id="amount"
+      placeholder="Expense amount"
+    >
 
-    }
+    <select id="category">
 
-    function renderExpenses(){
+      <option>Food</option>
+      <option>Travel</option>
+      <option>Shopping</option>
+      <option>Study</option>
+      <option>Other</option>
 
-      let expenseList =
-        document.getElementById("expenseList");
+    </select>
 
-      let totalAmount =
-        document.getElementById("totalAmount");
+    <button onclick="addExpense()">
+      Add Expense
+    </button>
 
-      expenseList.innerHTML = "";
+  </div>
 
-      let total = 0;
+  <!-- HISTORY -->
 
-      expenses.forEach((expense,index)=>{
+  <div class="card">
+
+    <h2>Expense History</h2>
+
+    <div id="expenseList"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+  let expenses =
+    JSON.parse(localStorage.getItem("expenses")) || [];
+
+  let currentFilter = "all";
+
+  function saveData(){
+
+    localStorage.setItem(
+      "expenses",
+      JSON.stringify(expenses)
+    );
+
+  }
+
+  function setFilter(filter){
+
+    currentFilter = filter;
+
+    renderExpenses();
+
+  }
+
+  function renderExpenses(){
+
+    let expenseList =
+      document.getElementById("expenseList");
+
+    let totalAmount =
+      document.getElementById("totalAmount");
+
+    let filterTitle =
+      document.getElementById("filterTitle");
+
+    expenseList.innerHTML = "";
+
+    let total = 0;
+
+    let now = new Date();
+
+    expenses.forEach((expense,index)=>{
+
+      let expenseDate = new Date(expense.date);
+
+      let show = false;
+
+      if(currentFilter === "daily"){
+
+        show =
+          expenseDate.toDateString() ===
+          now.toDateString();
+
+        filterTitle.innerText =
+          "Today's Expenses";
+
+      }
+
+      else if(currentFilter === "monthly"){
+
+        show =
+          expenseDate.getMonth() === now.getMonth()
+          &&
+          expenseDate.getFullYear() === now.getFullYear();
+
+        filterTitle.innerText =
+          "Monthly Expenses";
+
+      }
+
+      else if(currentFilter === "yearly"){
+
+        show =
+          expenseDate.getFullYear() ===
+          now.getFullYear();
+
+        filterTitle.innerText =
+          "Yearly Expenses";
+
+      }
+
+      else{
+
+        show = true;
+
+        filterTitle.innerText =
+          "Total Expenses";
+
+      }
+
+      if(show){
 
         total += Number(expense.amount);
 
@@ -222,11 +333,17 @@
           <div class="expense-item">
 
             <div>
+
               <h4>${expense.title}</h4>
 
-              <p class="category">
+              <div class="category">
                 ${expense.category}
-              </p>
+              </div>
+
+              <div class="datetime">
+                ${expense.date}
+              </div>
+
             </div>
 
             <div align="right">
@@ -248,59 +365,71 @@
 
         `;
 
-      });
-
-      totalAmount.innerText = "₹" + total;
-
-    }
-
-    function addExpense(){
-
-      let title =
-        document.getElementById("title").value;
-
-      let amount =
-        document.getElementById("amount").value;
-
-      let category =
-        document.getElementById("category").value;
-
-      if(title === "" || amount === ""){
-
-        alert("Please fill all fields");
-
-        return;
-
       }
 
-      expenses.push({
-        title,
-        amount,
-        category
-      });
+    });
 
-      saveData();
+    totalAmount.innerText = "₹" + total;
 
-      renderExpenses();
+  }
 
-      document.getElementById("title").value = "";
-      document.getElementById("amount").value = "";
+  function addExpense(){
+
+    let title =
+      document.getElementById("title").value;
+
+    let amount =
+      document.getElementById("amount").value;
+
+    let category =
+      document.getElementById("category").value;
+
+    if(title === "" || amount === ""){
+
+      alert("Please fill all fields");
+
+      return;
 
     }
 
-    function deleteExpense(index){
+    let now = new Date();
 
-      expenses.splice(index,1);
+    let formattedDate =
+      now.toLocaleDateString() +
+      " " +
+      now.toLocaleTimeString();
 
-      saveData();
+    expenses.push({
 
-      renderExpenses();
+      title,
+      amount,
+      category,
+      date: formattedDate
 
-    }
+    });
+
+    saveData();
 
     renderExpenses();
 
-  </script>
+    document.getElementById("title").value = "";
+    document.getElementById("amount").value = "";
+
+  }
+
+  function deleteExpense(index){
+
+    expenses.splice(index,1);
+
+    saveData();
+
+    renderExpenses();
+
+  }
+
+  renderExpenses();
+
+</script>
 
 </body>
 </html>
