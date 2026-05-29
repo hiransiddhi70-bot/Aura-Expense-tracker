@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aura Expense Tracker</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:#0f172a;
+      color:white;
+      padding:20px;
+    }
+
+    .container{
+      max-width:450px;
+      margin:auto;
+    }
+
+    .title{
+      text-align:center;
+      font-size:32px;
+      margin-bottom:20px;
+      color:#38bdf8;
+    }
+
+    .card{
+      background:#1e293b;
+      padding:20px;
+      border-radius:20px;
+      margin-bottom:20px;
+      box-shadow:0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .balance{
+      text-align:center;
+    }
+
+    .balance h2{
+      margin-top:10px;
+      color:#4ade80;
+      font-size:35px;
+    }
+
+    input, select{
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      border:none;
+      border-radius:10px;
+      outline:none;
+      font-size:16px;
+    }
+
+    button{
+      width:100%;
+      padding:12px;
+      margin-top:15px;
+      border:none;
+      border-radius:10px;
+      background:#38bdf8;
+      color:white;
+      font-size:18px;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    button:hover{
+      background:#0ea5e9;
+    }
+
+    .expense-list{
+      margin-top:10px;
+    }
+
+    .expense-item{
+      background:#334155;
+      padding:12px;
+      border-radius:12px;
+      margin-bottom:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .expense-item span{
+      color:#f87171;
+      font-weight:bold;
+    }
+
+    .delete-btn{
+      background:red;
+      border:none;
+      color:white;
+      padding:5px 10px;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    .category{
+      font-size:13px;
+      color:#cbd5e1;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1 class="title">Aura Expense</h1>
+
+  <div class="card balance">
+    <h3>Total Expense</h3>
+    <h2 id="total">₹0</h2>
+  </div>
+
+  <div class="card">
+
+    <input type="text" id="title" placeholder="Expense Title">
+
+    <input type="number" id="amount" placeholder="Amount">
+
+    <select id="category">
+      <option>Food</option>
+      <option>Travel</option>
+      <option>Shopping</option>
+      <option>Study</option>
+      <option>Other</option>
+    </select>
+
+    <button onclick="addExpense()">
+      Add Expense
+    </button>
+
+  </div>
+
+  <div class="card">
+    <h3>Expense History</h3>
+
+    <div class="expense-list" id="expenseList">
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+  let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+
+  function saveData(){
+    localStorage.setItem("expenses", JSON.stringify(expenses));
+  }
+
+  function renderExpenses(){
+
+    let list = document.getElementById("expenseList");
+    let total = document.getElementById("total");
+
+    list.innerHTML = "";
+
+    let totalAmount = 0;
+
+    expenses.forEach((expense, index)=>{
+
+      totalAmount += Number(expense.amount);
+
+      list.innerHTML += `
+        <div class="expense-item">
+
+          <div>
+            <h4>${expense.title}</h4>
+            <p class="category">${expense.category}</p>
+          </div>
+
+          <div>
+            <span>₹${expense.amount}</span>
+            <br><br>
+            <button class="delete-btn"
+              onclick="deleteExpense(${index})">
+              X
+            </button>
+          </div>
+
+        </div>
+      `;
+    });
+
+    total.innerText = "₹" + totalAmount;
+  }
+
+  function addExpense(){
+
+    let title = document.getElementById("title").value;
+    let amount = document.getElementById("amount").value;
+    let category = document.getElementById("category").value;
+
+    if(title === "" || amount === ""){
+      alert("Please fill all fields");
+      return;
+    }
+
+    expenses.push({
+      title,
+      amount,
+      category
+    });
+
+    saveData();
+    renderExpenses();
+
+    document.getElementById("title").value = "";
+    document.getElementById("amount").value = "";
+  }
+
+  function deleteExpense(index){
+
+    expenses.splice(index,1);
+
+    saveData();
+    renderExpenses();
+  }
+
+  renderExpenses();
+
+</script>
+
+</body>
+</html>
